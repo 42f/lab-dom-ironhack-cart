@@ -1,3 +1,4 @@
+
 // ITERATION 1
 
 function updateSubtotal(product) {
@@ -9,11 +10,11 @@ function updateSubtotal(product) {
 }
 
 function fetchProducts() {
-  return document.querySelectorAll('.product');
+  return document.querySelectorAll('tbody .product');
 }
 
-function getProductName(product) {
-  return product.querySelector('.name span').innerHTML;
+function setRemoveHandler(product) {
+    product.querySelector('button').addEventListener('click', removeProduct);
 }
 
 function calculateAll() {
@@ -38,28 +39,45 @@ function calculateAll() {
 // ITERATION 4
 
 function removeProduct(event) {
-  console.log('Hello');
   const target = event.currentTarget;
   if (target) {
-    const nodeToRemove = target.parentNode.parentNode;
-    nodeToRemove.parentNode.removeChild(nodeToRemove);
+    /*
+    ** Lab recommandation version:
+    */
+    // const nodeToRemove = target.parentNode.parentNode;
+    // nodeToRemove.parentNode.removeChild(nodeToRemove);
+
+    /*
+    ** Slightly cleaner version:
+    */
+    target.parentNode.parentNode.remove();
+
     calculateAll();
   }
 }
 
 // ITERATION 5
 
-function createProduct() {
+function createProduct(event) {
+  const userData  = event.currentTarget.parentNode.parentNode;
+  const productName = userData.querySelectorAll('input')[0].value;
+  const productPrice = userData.querySelectorAll('input')[1].value;
 
+  const template = document.querySelector('#new-product-template');
+  const newProduct = template.content.cloneNode(true);
+
+  newProduct.querySelector('td.name span').innerText = productName;
+  newProduct.querySelector('td.price span').innerText = productPrice;
+  setRemoveHandler(newProduct);
+  document.querySelector('#cart tbody').appendChild(newProduct);
 }
 
 window.addEventListener('load', () => {
   const calculatePricesBtn = document.getElementById('calculate');
-  calculatePricesBtn.addEventListener('click', calculateAll);
+  const createButton = document.querySelector('#create');
   const products = fetchProducts();
-  products.forEach(product => {
-    product.querySelector('button').addEventListener('click', removeProduct);
-  })
 
-  //... your code goes here
+  calculatePricesBtn.addEventListener('click', calculateAll);
+  createButton.addEventListener('click', (event) => createProduct(event))
+  products.forEach(product => setRemoveHandler(product));
 });
